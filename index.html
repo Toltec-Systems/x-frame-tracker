@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0f1a">
+<title>X-Frame Trainer</title>
+<style>
+  :root{--bg:#0b0f1a;--card:#151b2b;--card2:#1b2336;--ink:#eaf0ff;--mut:#8ea0c7;--line:#26304a;
+        --grn:#37d67a;--grnbg:#123726;--amb:#ffcf5c;--blue:#5b8cff;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:40px}
+  header{position:sticky;top:0;background:rgba(11,15,26,.92);backdrop-filter:blur(10px);padding:14px 16px 10px;border-bottom:1px solid var(--line);z-index:10}
+  h1{margin:0 0 10px;font-size:19px;letter-spacing:.3px}
+  h1 span{color:var(--blue)}
+  .tabs{display:flex;gap:8px}
+  .tab{flex:1;padding:9px 0;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:11px;color:var(--mut);font-weight:600;font-size:15px}
+  .tab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .days{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px}
+  .day{white-space:nowrap;padding:8px 14px;background:var(--card);border:1px solid var(--line);border-radius:20px;color:var(--mut);font-weight:600;font-size:14px}
+  .day.on{background:var(--ink);color:#0b0f1a;border-color:var(--ink)}
+  .daytitle{padding:12px 16px 2px;color:var(--mut);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+  .wrap{padding:6px 14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .ex{font-size:17px;font-weight:700;margin:0}
+  .mach{color:var(--mut);font-size:13px;margin:3px 0 0}
+  .chip{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--mut);white-space:nowrap}
+  .last{margin:11px 0 0;font-size:14px}
+  .last b{font-size:16px}
+  .last .wk{color:var(--mut);font-size:12px}
+  .trg{margin-top:11px;padding:11px 12px;border-radius:12px;font-weight:700;font-size:15px}
+  .trg.add{background:var(--grnbg);color:var(--grn);border:1px solid #1e5a3a}
+  .trg.hold{background:var(--card2);color:var(--mut);border:1px solid var(--line);font-weight:600}
+  .trg.none{background:var(--card2);color:var(--mut);border:1px dashed var(--line);font-weight:600}
+  .hist{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .hist .w{background:var(--card2);border:1px solid var(--line);border-radius:7px;padding:3px 7px;font-size:11px;color:var(--mut)}
+  .hist .w b{color:var(--ink)}
+  .foot{text-align:center;color:var(--mut);font-size:11px;padding:20px 16px 0;line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+  <h1>X-Frame <span>Trainer</span></h1>
+  <div class="tabs" id="tabs"></div>
+</header>
+<div class="days" id="days"></div>
+<div class="daytitle" id="daytitle"></div>
+<div class="wrap" id="wrap"></div>
+<div class="foot" id="foot"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
