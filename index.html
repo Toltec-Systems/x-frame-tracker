@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -56,7 +58,20 @@
 <div class="daytitle" id="daytitle"></div>
 <div class="wrap" id="wrap"></div>
 <div class="foot" id="foot"></div>
-<script src="data.js"></script>
-<script src="app.js"></script>
+<script>
+  // Cache-bust: the data updates daily, so always fetch a fresh copy on open
+  // (GitHub Pages/Safari otherwise serve a stale data.js). Load data first, then the app.
+  (function(){
+    var t = Date.now();
+    var d = document.createElement("script");
+    d.src = "data.js?t=" + t;
+    d.onload = function(){
+      var a = document.createElement("script");
+      a.src = "app.js?t=" + t;
+      document.body.appendChild(a);
+    };
+    document.body.appendChild(d);
+  })();
+</script>
 </body>
 </html>
