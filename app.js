@@ -53,7 +53,9 @@ function boot(){
       var slots=DATA.slots.filter(function(s){return s.day===day;});
       document.getElementById("wrap").innerHTML = slots.map(function(s){
         var tracks=machineTracks(person,s);
-        var head='<div class="top"><div><p class="ex">'+s.order+'. '+s.exercise+'</p></div><div class="chip">🎯 '+s.target+'</div></div>';
+        var setsChip = s.sets ? '<div class="chip chip-sets">'+s.sets+' sets</div>' : '';
+        var head='<div class="top"><div><p class="ex">'+s.order+'. '+s.exercise+'</p></div>'+
+                 '<div class="chips">'+setsChip+'<div class="chip">🎯 '+s.target+' reps</div></div></div>';
         var body;
         if(!tracks.length){
           body='<div class="trg none">No sets logged yet</div>';
