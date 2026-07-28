@@ -9,6 +9,12 @@ function boot(){
 
     function top(t){ var m=String(t||"").split("-"); return parseInt(m[m.length-1],10)||0; }
 
+    // date display: logs carry a session date (YYYY-MM-DD)
+    var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    function fmtDate(s,withYr){ var p=String(s||"").split("-"); if(p.length<3) return s||"";
+      var t=MON[(+p[1])-1]+" "+(+p[2]); return withYr ? t+", "+p[0] : t; }
+    var asOf=""; DATA.logs.forEach(function(l){ if(l.date && l.date>asOf) asOf=l.date; });
+
     // One "track" per machine used for this person+exercise slot. Weights aren't
     // comparable across machines, so each machine keeps its own week-over-week
     // ladder and its own add-weight trigger. The benchmark set for a given week
@@ -61,7 +67,7 @@ function boot(){
           body='<div class="trg none">No sets logged yet</div>';
         } else {
           body=tracks.map(function(t){
-            var last = t.latest ? 'Last: <b>'+t.latest.weight+' × '+t.latest.reps+'</b> <span class="wk">(wk '+t.latest.week+')</span>'
+            var last = t.latest ? 'Last: <b>'+t.latest.weight+' × '+t.latest.reps+'</b> <span class="wk">(wk '+t.latest.week+(t.latest.date?' · '+fmtDate(t.latest.date,false):'')+')</span>'
                                 : '<span style="color:var(--mut)">Last: —</span>';
             var e1 = t.e1!=null ? '<span class="e1'+(t.best?' top':'')+'">1RM '+t.e1+(t.best?' ★':'')+'</span>' : '';
             var hist = t.weeks.length>1 ? '<div class="hist">'+t.weeks.map(function(w){return '<span class="w">W'+w+' <b>'+t.byWeek[w].weight+'×'+t.byWeek[w].reps+'</b></span>';}).join("")+'</div>' : '';
@@ -73,6 +79,7 @@ function boot(){
         return '<div class="card">'+head+body+'</div>';
       }).join("");
       document.getElementById("foot").innerHTML =
+        (asOf ? '<b>Data as of '+fmtDate(asOf,true)+'</b> · dates shown are each set’s session date.<br>' : '')+
         "Each machine tracks its own weight & add-weight trigger (weights aren't comparable across machines).<br>★ = your highest est. 1RM for that lift. First set on a machine is the trigger — one rep above the top of the range = add weight next week.<br>Auto-updates when new workout transcripts are logged. · "+DATA.logs.length+" sets on file.";
     }
 
