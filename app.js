@@ -32,12 +32,14 @@ function boot(){
       var CAP=top(slot.target), FLOOR=bottom(slot.target);
       var tracks=Object.keys(byMachine).map(function(m){
         var sets=byMachine[m].filter(function(r){return r.weight!=null && r.reps!=null;});
-        var byWeek={};
+        var byWeek={}, allByWeek={};
         sets.forEach(function(r){
+          if(!(r.week in allByWeek) || better(r,allByWeek[r.week])) allByWeek[r.week]=r; // best set that week (history widget — every week shows)
           if(r.reps<FLOOR) return;                                              // missed rep floor -> failed attempt
-          if(!(r.week in byWeek) || better(r,byWeek[r.week])) byWeek[r.week]=r;  // best qualifying set that week
+          if(!(r.week in byWeek) || better(r,byWeek[r.week])) byWeek[r.week]=r;  // best qualifying set that week (benchmark)
         });
         var weeks=Object.keys(byWeek).map(Number).sort(function(a,b){return a-b;});
+        var allWeeks=Object.keys(allByWeek).map(Number).sort(function(a,b){return a-b;});
         var bench=null; weeks.forEach(function(w){ if(better(byWeek[w],bench)) bench=byWeek[w]; }); // high-water mark across weeks
         var noQual=false;
         if(!bench && sets.length){ noQual=true; sets.forEach(function(r){ if(better(r,bench)) bench=r; }); } // never cleared floor
@@ -49,7 +51,7 @@ function boot(){
           else if(bench.reps>=CAP){ var inc=5*Math.max(1,Math.ceil((bench.reps-CAP)/2)); trg={cls:"add",txt:"⬆ ADD "+inc+" lb → "+(bench.weight+inc)+" lb"}; }
           else { trg={cls:"hold",txt:"Hold "+bench.weight+" lb — reps "+bench.reps+" → "+CAP}; }
         }
-        return {machine:m, byWeek:byWeek, weeks:weeks, latest:bench, trg:trg, e1:e1};
+        return {machine:m, byWeek:byWeek, weeks:weeks, allByWeek:allByWeek, allWeeks:allWeeks, latest:bench, trg:trg, e1:e1};
       });
       // most-recently-used machine first, then strongest
       tracks.sort(function(a,b){
@@ -83,7 +85,7 @@ function boot(){
             var last = t.latest ? 'Best: <b>'+t.latest.weight+' × '+t.latest.reps+'</b> <span class="wk">(wk '+t.latest.week+(t.latest.date?' · '+fmtDate(t.latest.date,false):'')+')</span>'
                                 : '<span style="color:var(--mut)">Best: —</span>';
             var e1 = t.e1!=null ? '<span class="e1'+(t.best?' top':'')+'">1RM '+t.e1+(t.best?' ★':'')+'</span>' : '';
-            var hist = t.weeks.length>1 ? '<div class="hist">'+t.weeks.map(function(w){return '<span class="w">W'+w+' <b>'+t.byWeek[w].weight+'×'+t.byWeek[w].reps+'</b></span>';}).join("")+'</div>' : '';
+            var hist = t.allWeeks.length ? '<div class="hist">'+t.allWeeks.map(function(w){return '<span class="w">W'+w+' <b>'+t.allByWeek[w].weight+'×'+t.allByWeek[w].reps+'</b></span>';}).join("")+'</div>' : '';
             return '<div class="mtrack'+(t.best?' bestrack':'')+'"><div class="mname">🏋️ '+t.machine+' '+e1+'</div>'+
                    '<div class="last">'+last+'</div>'+hist+
                    '<div class="trg '+t.trg.cls+'">'+t.trg.txt+'</div></div>';
