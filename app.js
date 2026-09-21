@@ -43,24 +43,21 @@ function boot(){
         var bench=null; weeks.forEach(function(w){ if(better(byWeek[w],bench)) bench=byWeek[w]; }); // high-water mark across weeks
         var noQual=false;
         if(!bench && sets.length){ noQual=true; sets.forEach(function(r){ if(better(r,bench)) bench=r; }); } // never cleared floor
-        var trg, e1=null;
+        var trg;
         if(!bench){ trg={cls:"none",txt:"No sets logged yet"}; }
         else {
-          e1=Math.round(bench.weight*(1+bench.reps/30));
           if(noQual){ trg={cls:"hold",txt:"⚠ Reduce — clear "+FLOOR+"+ reps at "+bench.weight+" lb"}; }
           else if(bench.reps>=CAP){ var inc=5*Math.max(1,Math.ceil((bench.reps-CAP)/2)); trg={cls:"add",txt:"⬆ ADD "+inc+" lb → "+(bench.weight+inc)+" lb"}; }
           else { trg={cls:"hold",txt:"Hold "+bench.weight+" lb — reps "+bench.reps+" → "+CAP}; }
         }
-        return {machine:m, byWeek:byWeek, weeks:weeks, allByWeek:allByWeek, allWeeks:allWeeks, latest:bench, trg:trg, e1:e1};
+        return {machine:m, byWeek:byWeek, weeks:weeks, allByWeek:allByWeek, allWeeks:allWeeks, latest:bench, trg:trg};
       });
-      // most-recently-used machine first, then strongest
+      // most-recently-used machine first, then heaviest benchmark
       tracks.sort(function(a,b){
         var aw=a.weeks.length?a.weeks[a.weeks.length-1]:0, bw=b.weeks.length?b.weeks[b.weeks.length-1]:0;
-        return bw!==aw ? bw-aw : (b.e1||0)-(a.e1||0);
+        var ab=a.latest?a.latest.weight:0, bb=b.latest?b.latest.weight:0;
+        return bw!==aw ? bw-aw : bb-ab;
       });
-      // flag the machine with the highest est. 1RM (only meaningful when comparing 2+)
-      var best=null; tracks.forEach(function(t){ if(t.e1!=null && (best===null||t.e1>best)) best=t.e1; });
-      tracks.forEach(function(t){ t.best = (best!==null && t.e1===best && tracks.length>1); });
       return tracks;
     }
 
@@ -84,9 +81,8 @@ function boot(){
           body=tracks.map(function(t){
             var last = t.latest ? 'Best: <b>'+t.latest.weight+' × '+t.latest.reps+'</b> <span class="wk">(wk '+t.latest.week+(t.latest.date?' · '+fmtDate(t.latest.date,false):'')+')</span>'
                                 : '<span style="color:var(--mut)">Best: —</span>';
-            var e1 = t.e1!=null ? '<span class="e1'+(t.best?' top':'')+'">1RM '+t.e1+(t.best?' ★':'')+'</span>' : '';
             var hist = t.allWeeks.length ? '<div class="hist">'+t.allWeeks.map(function(w){return '<span class="w">W'+w+' <b>'+t.allByWeek[w].weight+'×'+t.allByWeek[w].reps+'</b></span>';}).join("")+'</div>' : '';
-            return '<div class="mtrack'+(t.best?' bestrack':'')+'"><div class="mname">🏋️ '+t.machine+' '+e1+'</div>'+
+            return '<div class="mtrack"><div class="mname">🏋️ '+t.machine+'</div>'+
                    '<div class="last">'+last+'</div>'+hist+
                    '<div class="trg '+t.trg.cls+'">'+t.trg.txt+'</div></div>';
           }).join("");
@@ -95,7 +91,7 @@ function boot(){
       }).join("");
       document.getElementById("foot").innerHTML =
         (asOf ? '<b>Data as of '+fmtDate(asOf,true)+'</b> · dates shown are each set’s session date.<br>' : '')+
-        "Each machine tracks its own benchmark, kept separate per day (Day 2 ≠ Day 5) since fatigue differs.<br>Benchmark = the heaviest weight you cleared the target reps at — best across all weeks, so a rough week never lowers it. Reps at/over the top of the range → add weight; inside the range → hold and beat your reps; a heavier set that misses the rep floor is a failed attempt.<br>★ = your strongest machine for that lift. Auto-updates when new transcripts are logged. · "+DATA.logs.length+" sets on file.";
+        "Each machine tracks its own benchmark, kept separate per day (Day 2 ≠ Day 5) since fatigue differs.<br>Benchmark = the heaviest weight you cleared the target reps at — best across all weeks, so a rough week never lowers it. Reps at/over the top of the range → add weight; inside the range → hold and beat your reps; a heavier set that misses the rep floor is a failed attempt.<br>Auto-updates when new transcripts are logged. · "+DATA.logs.length+" sets on file.";
     }
 
     document.getElementById("tabs").addEventListener("click",function(e){var t=e.target.getAttribute("data-p"); if(t){person=t; render();}});
